@@ -26,17 +26,28 @@ meetingsRouter.param('meetingId',(req,res,next,id)=>{
     }
 });
 
-meetingsRouter.use('/:meetingId',(req,res,next)=>{
+meetingsRouter.get('/:meetingId',(req,res,next)=>{
     res.send(req.meeting);
 });
 
 meetingsRouter.post('/', (req,res,next)=>{
-    let newMeeting = createMeeting();
+    let meeting = createMeeting();
+    let newMeeting = addToDatabase('meetings', meeting);
     if(newMeeting){
-        res.send(newMeeting);
+        res.status(201).send(newMeeting);
     } else{
         let error = new Error('The meeting wasnt created, try again');
         error.status = 400;
+        next(error);
+    }
+});
+
+meetingsRouter.delete('/',(req,res,next)=>{
+    if(deleteAllFromDatabase('meetings')){
+        res.status(204).send();
+    }else {
+        let error = new Error('Could not delete the resource');
+        error.status = 404;
         next(error);
     }
 });

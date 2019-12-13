@@ -26,17 +26,39 @@ minionsRouter.param('minionId',(req,res,next,id)=>{
     }
 });
 
-minionsRouter.use('/:minionId',(req,res,next)=>{
+minionsRouter.get('/:minionId',(req,res,next)=>{
     res.send(req.minion);
 });
 
 minionsRouter.post('/', (req,res,next)=>{
     if(req.body){
         let newMinion = addToDatabase('minions', req.body);
-        res.send(newMinion);
+        res.status(201).send(newMinion);
     } else{
         let error = new Error('Please, fill the minions fields');
         error.status = 400;
+        next(error);
+    }
+});
+
+minionsRouter.put('/:minionId',(req,res,next)=>{
+    req.body.id = req.minion.id;
+    let updatedMinion = updateInstanceInDatabase('minions', req.body);
+    if (updatedMinion){
+        res.send(updatedMinion);
+    } else {
+        let error = new Error('Please, fill the minions fields');
+        error.status = 400;
+        next(error);
+    }
+});
+
+minionsRouter.delete('/:minionId',(req,res,next)=>{
+    if(deleteFromDatabasebyId('minions', req.minion.id)){
+        res.status(204).send();
+    }else {
+        let error = new Error('Could not delete the resource');
+        error.status = 404;
         next(error);
     }
 });

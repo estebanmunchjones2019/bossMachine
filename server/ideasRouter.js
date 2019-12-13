@@ -26,20 +26,43 @@ ideasRouter.param('ideaId',(req,res,next,id)=>{
     }
 });
 
-ideasRouter.use('/:ideaId',(req,res,next)=>{
+ideasRouter.get('/:ideaId',(req,res,next)=>{
     res.send(req.idea);
 });
 
 ideasRouter.post('/', (req,res,next)=>{
     if(req.body){
         let newIdea = addToDatabase('ideas', req.body);
-        res.send(newIdea);
+        res.status(201).send(newIdea);
     } else{
         let error = new Error('Please, fill the ideas fields');
         error.status = 400;
         next(error);
     }
 });
+
+ideasRouter.put('/:ideaId',(req,res,next)=>{
+    req.body.id = req.idea.id;
+    let updatedIdea = updateInstanceInDatabase('ideas', req.body);
+    if (updatedIdea){
+        res.send(updatedIdea);
+    } else {
+        let error = new Error('Please, fill the ideas fields');
+        error.status = 400;
+        next(error);
+    }
+});
+
+ideasRouter.delete('/:ideaId',(req,res,next)=>{
+    if(deleteFromDatabasebyId('ideas', req.idea.id)){
+        res.status(204).send();
+    }else {
+        let error = new Error('Could not delete the resource');
+        error.status = 404;
+        next(error);
+    }
+});
+
 
 
 const errorHandler = (err,req,res,next) => {
