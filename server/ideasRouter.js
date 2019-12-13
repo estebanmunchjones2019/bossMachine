@@ -30,6 +30,17 @@ ideasRouter.use('/:ideaId',(req,res,next)=>{
     res.send(req.idea);
 });
 
+ideasRouter.post('/', (req,res,next)=>{
+    if(req.body){
+        let newIdea = addToDatabase('ideas', req.body);
+        res.send(newIdea);
+    } else{
+        let error = new Error('Please, fill the ideas fields');
+        error.status = 400;
+        next(error);
+    }
+});
+
 
 const errorHandler = (err,req,res,next) => {
     let status = err.status || 500;

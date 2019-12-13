@@ -30,6 +30,16 @@ minionsRouter.use('/:minionId',(req,res,next)=>{
     res.send(req.minion);
 });
 
+minionsRouter.post('/', (req,res,next)=>{
+    if(req.body){
+        let newMinion = addToDatabase('minions', req.body);
+        res.send(newMinion);
+    } else{
+        let error = new Error('Please, fill the minions fields');
+        error.status = 400;
+        next(error);
+    }
+});
 
 const errorHandler = (err,req,res,next) => {
     let status = err.status || 500;

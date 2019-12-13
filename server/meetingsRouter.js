@@ -30,6 +30,17 @@ meetingsRouter.use('/:meetingId',(req,res,next)=>{
     res.send(req.meeting);
 });
 
+meetingsRouter.post('/', (req,res,next)=>{
+    let newMeeting = createMeeting();
+    if(newMeeting){
+        res.send(newMeeting);
+    } else{
+        let error = new Error('The meeting wasnt created, try again');
+        error.status = 400;
+        next(error);
+    }
+});
+
 
 const errorHandler = (err,req,res,next) => {
     let status = err.status || 500;
