@@ -19,6 +19,7 @@ app.use(bodyParser());
 
 app.use(morgan('tiny'));
 
+app.use(express.static('./'));
 
 // Mount your existing apiRouter below at the '/api' path.
 const apiRouter = require('./server/apiRouter');

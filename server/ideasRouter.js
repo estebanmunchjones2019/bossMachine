@@ -6,6 +6,7 @@ const {createMeeting,
     updateInstanceInDatabase,
     deleteFromDatabasebyId,
     deleteAllFromDatabase} = require('./db');
+const checkMillionDollarIdea = require('./checkMillionDollarIdea');
 
 const ideasRouter = express.Router();
 
@@ -26,6 +27,8 @@ ideasRouter.param('ideaId',(req,res,next,id)=>{
     }
 });
 
+ideasRouter.use('/', checkMillionDollarIdea);
+
 ideasRouter.get('/:ideaId',(req,res,next)=>{
     res.send(req.idea);
 });
@@ -42,11 +45,11 @@ ideasRouter.post('/', (req,res,next)=>{
 });
 
 ideasRouter.put('/:ideaId',(req,res,next)=>{
-    req.body.id = req.idea.id;
-    let updatedIdea = updateInstanceInDatabase('ideas', req.body);
-    if (updatedIdea){
-        res.send(updatedIdea);
-    } else {
+    if(req.body){
+        req.body.id = req.idea.id;
+        let updatedIdea = updateInstanceInDatabase('ideas', req.body);
+        res.status(201).send(updatedIdea);
+    }else {
         let error = new Error('Please, fill the ideas fields');
         error.status = 400;
         next(error);
@@ -55,7 +58,7 @@ ideasRouter.put('/:ideaId',(req,res,next)=>{
 
 ideasRouter.delete('/:ideaId',(req,res,next)=>{
     if(deleteFromDatabasebyId('ideas', req.idea.id)){
-        res.status(204).send();
+        res.status(204).send('No Content');
     }else {
         let error = new Error('Could not delete the resource');
         error.status = 404;
