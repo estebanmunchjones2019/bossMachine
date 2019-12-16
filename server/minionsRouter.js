@@ -7,7 +7,11 @@ const {createMeeting,
     deleteFromDatabasebyId,
     deleteAllFromDatabase} = require('./db');
 
+const workRouter = require('./workRouter');
+
 const minionsRouter = express.Router();
+
+minionsRouter.use('/:minionId/work', workRouter);
 
 minionsRouter.get('/', (req, res, next)=>{
 let allMinions = getAllFromDatabase('minions');
